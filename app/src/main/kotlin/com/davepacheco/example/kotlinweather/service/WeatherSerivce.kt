@@ -10,7 +10,11 @@ import retrofit2.http.Query
  * Created by pachecod on 16/06/16.
  */
 interface WeatherService {
-    //http://api.openweathermap.org/data/2.5/forecast?q=London,us&appid=
-    @GET("forecast")
-    fun getFiveDayForecastForCity(@Query("q") cityNameWithCountry: String, @Query("appid") apiKey: String = BuildConfig.OPEN_WEATHER_API_KEY): Call<Forecast>
+    //http://api.openweathermap.org/data/2.5/forecast/daily?q=London,uk&appid=
+
+    @GET("forecast/daily")
+    fun getWeeklyForecast(@Query("q") cityNameWithCountry: String,
+                          @Query("appid") apiKey: String = BuildConfig.OPEN_WEATHER_API_KEY,
+                          @Query("units") units : String = "metric",
+                          @Query("cnt") days: Int = 7): Call<Forecast>
 }
