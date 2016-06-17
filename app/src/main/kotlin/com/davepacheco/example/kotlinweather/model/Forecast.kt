@@ -1,6 +1,5 @@
 package com.davepacheco.example.kotlinweather.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
@@ -10,27 +9,37 @@ import java.util.*
  * Copyright (C) Sky UK Limited. All rights reserved.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Forecast(val city: City, @JsonProperty("list") val fiveDayForecast: List<WeatherForecast>) {
-        val forecastGroupedByDate : Map<Int, List<WeatherForecast>> by lazy {
-                fiveDayForecast.groupBy {
-                        it.dateTime.get(Calendar.DATE)
-                }
+data class Forecast(@JsonProperty("city") val city: City, @JsonProperty("list") val dailyForecast: List<DayForecast>)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class City(@JsonProperty("id") val id: String,
+                @JsonProperty("name") val name: String,
+                @JsonProperty("country") val country: String)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DayForecast(
+        @JsonProperty("dt")
+        val dateTimeInSeconds: Long,
+        @JsonProperty("temp") val temperature: Temperature) {
+
+        @JsonProperty("weather") private var weatherList: List<Weather> = listOf()
+
+        val weather : Weather by lazy {
+                weatherList.first()
         }
+
+        val date: Calendar by lazy {
+                val cal = Calendar.getInstance()
+                cal.timeInMillis = dateTimeInSeconds * 1000
+                cal
+        }
+
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class City(val id: String, val name: String, val country: String)
+data class Temperature(@JsonProperty("day") val day: Float,
+                       @JsonProperty("max") val maxTemp: Float,
+                       @JsonProperty("min") val minTemp: Float)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class WeatherForecast(
-        @JsonProperty("dt_txt")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        val dateTime: Calendar,
-        @JsonProperty("weather") val weather: List<Weather>,
-        @JsonProperty("main") val tempAndPressure: TemperatureAndPressure)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class TemperatureAndPressure(val temp: Float, @JsonProperty("temp_max") val maxTemp: Float, @JsonProperty("temp_min") val minTemp: Float, val pressure: String)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Weather(val description: String)
+data class Weather(@JsonProperty("description") val description: String)

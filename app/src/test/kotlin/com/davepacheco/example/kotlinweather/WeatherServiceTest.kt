@@ -1,8 +1,8 @@
 package com.davepacheco.example.kotlinweather
 
+import com.davepacheco.example.kotlinweather.model.Forecast
 import com.davepacheco.example.kotlinweather.service.WeatherService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.davepacheco.example.kotlinweather.model.Forecast
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,9 +34,9 @@ class WeatherServiceTest {
 
             Assert.assertEquals("London", forecast.city.name)
             // forecast every three hours for five days
-            Assert.assertEquals(40, forecast.fiveDayForecast.size)
+            Assert.assertEquals(7, forecast.dailyForecast.size)
 
-            Assert.assertEquals("few clouds", forecast.fiveDayForecast.first().weather.first().description)
+            Assert.assertEquals("light rain", forecast.dailyForecast.first().weather.description)
         } catch (ex: Exception) {
             Assert.fail("Exception ${ex.message} thrown")
         }
